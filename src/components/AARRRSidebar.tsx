@@ -58,13 +58,13 @@ export const AARRRSidebar = ({ data, impactedStages = [] }: { data: FunnelData, 
   const funnelWidths = [100, 84, 66, 50, 36];
 
   return (
-    <div className="w-[300px] flex-shrink-0 h-full border-r border-white/5 bg-surface/30 backdrop-blur-md p-5 overflow-y-auto flex flex-col">
-      <div className="flex items-center gap-2 mb-6 font-bold text-sm text-white">
+    <div className="w-[320px] flex-shrink-0 h-full border-r border-white/5 bg-surface/30 backdrop-blur-md p-5 flex flex-col">
+      <div className="flex items-center gap-2 mb-4 font-bold text-sm text-white">
         <Activity size={16} className="text-accent" /> LIVE FUNNEL
       </div>
 
-      {/* Funnel visualization */}
-      <div className="flex flex-col items-center gap-0 flex-1">
+      {/* Funnel visualization — stretches to fill height */}
+      <div className="flex flex-col items-center flex-1 justify-between">
         {stages.map((stg, i) => {
           const item = data[stg.key as keyof FunnelData];
           const isImpacted = impactedStages.includes(stg.key);
@@ -83,13 +83,13 @@ export const AARRRSidebar = ({ data, impactedStages = [] }: { data: FunnelData, 
               transition={{ duration: 0.5 }}
               className="flex flex-col items-center w-full"
             >
-              {/* Funnel tier — trapezoid shape */}
+              {/* Funnel tier — trapezoid shape, flex-1 to fill height */}
               <div
-                className="relative group cursor-default transition-all duration-300"
+                className="relative group cursor-default transition-all duration-300 flex-1"
                 style={{ width: `${width}%` }}
               >
                 <div
-                  className="relative overflow-hidden rounded-sm"
+                  className="relative overflow-hidden rounded-sm h-full flex flex-col justify-between"
                   style={{
                     background: `linear-gradient(135deg, ${color}30, ${color}15)`,
                     borderLeft: `2px solid ${color}60`,
@@ -154,13 +154,13 @@ export const AARRRSidebar = ({ data, impactedStages = [] }: { data: FunnelData, 
                 <div className="relative w-full flex justify-center">
                   <svg
                     width={`${Math.max(width, funnelWidths[i + 1])}%`}
-                    height="12"
-                    viewBox="0 0 100 12"
+                    height="16"
+                    viewBox="0 0 100 16"
                     preserveAspectRatio="none"
                     className="overflow-visible"
                   >
                     <path
-                      d={`M ${(100 - width) / 2} 0 L ${(100 - funnelWidths[i + 1]) / 2} 12 L ${(100 + funnelWidths[i + 1]) / 2} 12 L ${(100 + width) / 2} 0 Z`}
+                      d={`M ${(100 - width) / 2} 0 L ${(100 - funnelWidths[i + 1]) / 2} 16 L ${(100 + funnelWidths[i + 1]) / 2} 16 L ${(100 + width) / 2} 0 Z`}
                       fill={`${stageColors[stages[i + 1].key]}10`}
                       stroke={`${stageColors[stages[i + 1].key]}30`}
                       strokeWidth="0.5"
@@ -174,7 +174,7 @@ export const AARRRSidebar = ({ data, impactedStages = [] }: { data: FunnelData, 
       </div>
 
       {/* Legend */}
-      <div className="mt-6 pt-4 border-t border-white/5 flex flex-wrap gap-x-4 gap-y-1 text-[9px] text-gray-500">
+      <div className="mt-3 pt-3 border-t border-white/5 flex flex-wrap gap-x-4 gap-y-1 text-[9px] text-gray-500">
         <span className="flex items-center gap-1"><span className="w-1.5 h-1.5 rounded-full bg-emerald-400" /> Above</span>
         <span className="flex items-center gap-1"><span className="w-1.5 h-1.5 rounded-full bg-amber-400" /> At</span>
         <span className="flex items-center gap-1"><span className="w-1.5 h-1.5 rounded-full bg-red-400" /> Below</span>
