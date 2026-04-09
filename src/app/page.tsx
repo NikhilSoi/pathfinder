@@ -7,9 +7,19 @@ export default function Home() {
   const router = useRouter();
 
   return (
-    <div className="min-h-screen bg-background text-white p-6 md:p-12">
-      <div className="max-w-5xl mx-auto">
-        <h1 className="text-4xl md:text-5xl font-bold mb-3 tracking-tight">Pathfinder</h1>
+    <div className="min-h-screen bg-background text-white p-6 md:p-12 flex flex-col">
+      <div className="max-w-5xl mx-auto flex-1">
+        {/* Header with VectorEd brand */}
+        <div className="flex items-center gap-3 mb-8">
+          <div className="w-9 h-9 rounded-lg bg-[#2D8B6F] flex items-center justify-center text-white font-bold text-lg">
+            V
+          </div>
+          <div>
+            <h1 className="text-3xl md:text-4xl font-bold tracking-tight leading-none">Pathfinder</h1>
+            <span className="text-xs text-gray-500 tracking-wide">powered by VectorEd</span>
+          </div>
+        </div>
+
         <p className="text-lg text-gray-400 mb-10 max-w-2xl">Select a business archetype to begin your AARRR funnel simulation. Each scenario presents a different strategic challenge.</p>
 
         <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
@@ -33,6 +43,15 @@ export default function Home() {
             </div>
           ))}
         </div>
+      </div>
+
+      {/* Footer */}
+      <div className="max-w-5xl mx-auto w-full pt-12 pb-4 flex items-center justify-between text-xs text-gray-600">
+        <div className="flex items-center gap-2">
+          <div className="w-5 h-5 rounded bg-[#2D8B6F] flex items-center justify-center text-white font-bold text-[10px]">V</div>
+          <span>VectorEd</span>
+        </div>
+        <span>hello@vectored.co</span>
       </div>
     </div>
   );
