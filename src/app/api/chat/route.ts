@@ -36,7 +36,7 @@ Do not use markdown headers, just plain text with occasional bolding.`;
     });
 
     const response = await anthropic.messages.create({
-      model: 'claude-3-5-sonnet-latest',
+      model: process.env.ANTHROPIC_MODEL || 'claude-4.6b', // Defaulting to the 4.6b version based on user feedback
       max_tokens: 300,
       system: systemPrompt,
       messages: apiMessages,
