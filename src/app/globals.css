@@ -3,19 +3,28 @@
 @tailwind utilities;
 
 :root {
-  --background: #0B1F35;
+  --background: #060e17;
   --foreground: #ffffff;
-  --surface: #1a2d40;
-  --accent: #3A9E82;
+  --surface: #101c29;
+  --accent: #00F0FF;
+  --accent-secondary: #7000FF;
 }
 
 body {
   color: var(--foreground);
   background: var(--background);
+  background-image: radial-gradient(circle at 15% 50%, rgba(0, 240, 255, 0.05), transparent 25%),
+                    radial-gradient(circle at 85% 30%, rgba(112, 0, 255, 0.05), transparent 25%);
 }
 
 @layer utilities {
   .text-balance {
     text-wrap: balance;
+  }
+  .glass {
+    @apply bg-surface/60 backdrop-blur-xl border border-white/5 shadow-2xl;
+  }
+  .glass-panel {
+    @apply bg-surface/40 backdrop-blur-lg border border-white/10 shadow-[0_8px_32px_0_rgba(0,0,0,0.3)];
   }
 }

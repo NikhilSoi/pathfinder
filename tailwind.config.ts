@@ -9,10 +9,23 @@ const config: Config = {
   theme: {
     extend: {
       colors: {
-        background: "#0B1F35",
-        surface: "#1a2d40",
-        accent: "#3A9E82",
+        background: "var(--background)",
+        surface: "var(--surface)",
+        accent: "var(--accent)",
       },
+      backgroundImage: {
+        'glass-gradient': 'linear-gradient(135deg, rgba(255,255,255,0.05) 0%, rgba(255,255,255,0.01) 100%)',
+      },
+      animation: {
+        'pulse-slow': 'pulse 3s cubic-bezier(0.4, 0, 0.6, 1) infinite',
+        'float': 'float 3s ease-in-out infinite',
+      },
+      keyframes: {
+        float: {
+          '0%, 100%': { transform: 'translateY(0)' },
+          '50%': { transform: 'translateY(-10px)' },
+        }
+      }
     },
   },
   plugins: [],

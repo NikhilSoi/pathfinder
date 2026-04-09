@@ -143,9 +143,11 @@ export const DecisionPanel = ({ stage, onLockDecision }: { stage: string, onLock
   if (!decision) return null;
 
   return (
-    <div className="h-full bg-surface border-l border-white/5 p-6 flex flex-col overflow-y-auto">
-      <div className="bg-background rounded-full px-4 py-1 text-xs text-accent border border-accent/20 w-max mb-6">
-        Decision Stage
+    <div className="flex flex-col h-full bg-transparent overflow-y-auto w-full">
+      <div className="mb-6">
+        <div className="bg-background rounded-full px-4 py-1 text-xs text-accent border border-accent/20 w-max">
+          Decision Stage
+        </div>
       </div>
       <h2 className="text-xl font-bold mb-6 text-white leading-tight">{decision.question}</h2>
       

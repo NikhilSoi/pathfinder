@@ -181,9 +181,13 @@ export const DataDashboard = ({ stage }: { stage: string }) => {
   if (!stageData) return <div>No data available</div>;
 
   return (
-    <div className="flex flex-col h-full bg-background p-6 overflow-y-auto">
-      <h1 className="text-2xl font-bold mb-2 capitalize text-white">{stage} Data</h1>
-      <p className="text-sm text-gray-400 mb-8 max-w-2xl">{stageData.brief || stageData.dataSummary}</p>
+    <div className="flex flex-col gap-8 h-full bg-transparent text-white">
+      <div>
+        <h2 className="text-3xl font-bold mb-2 flex items-center gap-2">
+          <span className="capitalize">{stage}</span> Data
+        </h2>
+        <p className="text-sm text-gray-400 max-w-2xl">{stageData.brief || stageData.dataSummary}</p>
+      </div>
       
       <KPICards kpis={stageData.kpis} />
       
