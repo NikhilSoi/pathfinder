@@ -1,9 +1,7 @@
 import { Anthropic } from '@anthropic-ai/sdk';
 import { NextResponse } from 'next/server';
 
-const anthropic = new Anthropic({
-  apiKey: process.env.ANTHROPIC_API_KEY1 || process.env.ANTHROPIC_API_KEY || '',
-});
+// API client is initialized inside POST to capture runtime environment variables
 
 export async function POST(req: Request) {
   try {
@@ -29,10 +27,13 @@ Do not use markdown headers, just plain text with occasional bolding.`;
     let apiKey = process.env.ANTHROPIC_API_KEY1 || process.env.ANTHROPIC_API_KEY || '';
     
     if (!apiKey) {
-      console.warn("WARNING: ANTHROPIC_API_KEY is missing from .env.local! Using mocked response.");
-      // Provide a conversational Socratic fallback so the UI still functions
+      console.warn("WARNING: ANTHROPIC_API_KEY is missing! Using mocked response.");
       return NextResponse.json({ reply: "I notice your customer acquisition cost is rising. Which of our top channels do you believe is causing this drag, and why might that be?" });
     }
+
+    const anthropic = new Anthropic({
+      apiKey: apiKey,
+    });
 
     const response = await anthropic.messages.create({
       model: 'claude-3-5-sonnet-20240620',
