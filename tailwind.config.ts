@@ -9,9 +9,9 @@ const config: Config = {
   theme: {
     extend: {
       colors: {
-        background: "var(--background)",
-        surface: "var(--surface)",
-        accent: "var(--accent)",
+        background: "#060e17",
+        surface: "#101c29",
+        accent: "#00F0FF",
       },
       backgroundImage: {
         'glass-gradient': 'linear-gradient(135deg, rgba(255,255,255,0.05) 0%, rgba(255,255,255,0.01) 100%)',
