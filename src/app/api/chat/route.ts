@@ -43,8 +43,9 @@ Do not use markdown headers, just plain text with occasional bolding.`;
     });
 
     return NextResponse.json({ reply: response.content[0].type === 'text' ? response.content[0].text : '...' });
-  } catch (error) {
+  } catch (error: any) {
     console.error('Anthropic API Error:', error);
-    return NextResponse.json({ reply: 'Nova is currently offline. Please ensure your API key is correctly configured.' });
+    const errMsg = error?.message || 'Unknown API Error';
+    return NextResponse.json({ reply: `API Error: ${errMsg}. Check Vercel logs or your API key.` });
   }
 }
