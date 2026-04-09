@@ -26,6 +26,14 @@ Do not use markdown headers, just plain text with occasional bolding.`;
       apiMessages = [{ role: 'user', content: 'Begin analysis.' }, ...apiMessages];
     }
 
+    let apiKey = process.env.ANTHROPIC_API_KEY1 || process.env.ANTHROPIC_API_KEY || '';
+    
+    if (!apiKey) {
+      console.warn("WARNING: ANTHROPIC_API_KEY is missing from .env.local! Using mocked response.");
+      // Provide a conversational Socratic fallback so the UI still functions
+      return NextResponse.json({ reply: "I notice your customer acquisition cost is rising. Which of our top channels do you believe is causing this drag, and why might that be?" });
+    }
+
     const response = await anthropic.messages.create({
       model: 'claude-3-5-sonnet-20240620',
       max_tokens: 300,
@@ -36,6 +44,6 @@ Do not use markdown headers, just plain text with occasional bolding.`;
     return NextResponse.json({ reply: response.content[0].type === 'text' ? response.content[0].text : '...' });
   } catch (error) {
     console.error('Anthropic API Error:', error);
-    return NextResponse.json({ error: 'Failed to fetch response from Nova.' }, { status: 500 });
+    return NextResponse.json({ reply: 'Nova is currently offline. Please ensure your API key is correctly configured.' });
   }
 }

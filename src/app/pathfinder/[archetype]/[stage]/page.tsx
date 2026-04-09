@@ -23,10 +23,17 @@ export default function PathfinderStage({ params }: { params: { archetype: strin
   const [showConsequence, setShowConsequence] = useState(false);
   const [impactedStages, setImpactedStages] = useState<string[]>([]);
 
+  const [history, setHistory] = useState<any[]>([]);
+
   useEffect(() => {
     // Basic verification
     if (archetype !== 'kova') router.replace('/');
     if (!stages.includes(stage) && stage !== 'completion') router.replace('/pathfinder/kova/acquisition');
+    
+    if (stage === 'completion') {
+      const stored = JSON.parse(sessionStorage.getItem('pathfinder_decisions') || '[]');
+      setHistory(stored);
+    }
   }, [stage, archetype, router]);
 
   const handleLockDecision = (idx: number) => {
@@ -34,7 +41,8 @@ export default function PathfinderStage({ params }: { params: { archetype: strin
     setShowConsequence(true);
     
     // Apply funnel impacts
-    const consequence = stageData.decision.options[idx].consequence;
+    const option = stageData.decision.options[idx];
+    const consequence = option.consequence;
     const impacts = consequence.funnelImpact;
     
     const newFunnel = { ...funnelData };
@@ -49,6 +57,15 @@ export default function PathfinderStage({ params }: { params: { archetype: strin
 
     setFunnelData(newFunnel);
     setImpactedStages(changed);
+
+    // Save decision to history
+    const storedDecisions = JSON.parse(sessionStorage.getItem('pathfinder_decisions') || '[]');
+    const currentDecision = {
+      stage,
+      decisionAction: option.shortDescription,
+      impact: consequence.kpiDeltas,
+    };
+    sessionStorage.setItem('pathfinder_decisions', JSON.stringify([...storedDecisions, currentDecision]));
   };
 
   const handleContinue = () => {
@@ -74,9 +91,39 @@ export default function PathfinderStage({ params }: { params: { archetype: strin
           <h1 className="text-5xl font-bold mb-4 tracking-tight">Simulation Complete</h1>
           <p className="text-lg text-gray-400 mb-8 max-w-2xl">You have completed all 5 stages of the AARRR funnel for Kova. Your final funnel state is shown on the left.</p>
           
+          <div className="glass p-8 rounded-2xl mb-6">
+             <h2 className="text-2xl font-bold mb-4 text-accent">Decision History & Impact</h2>
+             <div className="flex flex-col gap-4">
+               {history.map((h, i) => (
+                 <div key={i} className="flex flex-col md:flex-row justify-between bg-surface/50 border border-white/5 p-4 rounded-xl">
+                   <div className="mb-2 md:mb-0">
+                     <span className="text-xs uppercase text-accent font-bold tracking-wider">{h.stage}</span>
+                     <p className="font-semibold mt-1 text-white">{h.decisionAction}</p>
+                   </div>
+                   <div className="flex flex-wrap gap-2 items-center">
+                     {Object.entries(h.impact || {}).map(([k, v]: any) => (
+                       <span key={k} className="text-xs px-2 py-1 bg-white/5 border border-white/10 rounded uppercase text-gray-300 whitespace-nowrap">
+                         {k}: <strong className="text-white">{v}</strong>
+                       </span>
+                     ))}
+                   </div>
+                 </div>
+               ))}
+             </div>
+          </div>
+
           <div className="glass p-8 flex-1 rounded-2xl">
              <h2 className="text-2xl font-bold mb-4 text-accent">Final Debrief</h2>
              <p className="text-gray-200 leading-relaxed text-lg italic">{KOVA_NOVA_PROMPTS.revenue.postConsequence}</p>
+          </div>
+          
+          <div className="mt-8 flex justify-end">
+            <button 
+              onClick={() => { sessionStorage.removeItem('pathfinder_decisions'); router.push('/'); }}
+              className="bg-accent text-[#060e17] px-6 py-3 rounded-lg font-bold hover:bg-accent/80 transition-colors"
+            >
+              Restart Simulation
+            </button>
           </div>
         </div>
       </div>
