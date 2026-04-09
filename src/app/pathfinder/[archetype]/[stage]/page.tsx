@@ -8,16 +8,29 @@ import { DataDashboard } from '@/components/DataDashboard';
 import { DecisionPanel } from '@/components/DecisionPanel';
 import { ConsequencePanel } from '@/components/ConsequencePanel';
 import { NovaChat } from '@/components/NovaChat';
-import { KOVA_ARCHETYPE, KOVA_NOVA_PROMPTS } from '@/data/pathfinder-kova';
+import { getArchetype } from '@/data/archetypes';
 
 export default function PathfinderStage({ params }: { params: { archetype: string, stage: string } }) {
   const router = useRouter();
   const { stage, archetype } = params;
 
-  const stageData = KOVA_ARCHETYPE[stage as keyof typeof KOVA_ARCHETYPE] as any;
-  const initialFunnel: FunnelData = JSON.parse(JSON.stringify(KOVA_ARCHETYPE.funnelHealth));
+  const [archetypeData, setArchetypeData] = useState<any>(null);
+  const [novaPrompts, setNovaPrompts] = useState<any>(null);
 
-  const [funnelData, setFunnelData] = useState<FunnelData>(initialFunnel);
+  useEffect(() => {
+    getArchetype(archetype).then((data) => {
+      if (data) {
+        setArchetypeData(data.archetype);
+        setNovaPrompts(data.prompts);
+      } else {
+        router.replace('/');
+      }
+    });
+  }, [archetype, router]);
+
+  const stageData = archetypeData?.[stage as string] as any;
+
+  const [funnelData, setFunnelData] = useState<FunnelData | null>(null);
   const [completedStages, setCompletedStages] = useState<string[]>([]);
   const [lockedDecisionIdx, setLockedDecisionIdx] = useState<number>(-1);
   const [showConsequence, setShowConsequence] = useState(false);
@@ -25,11 +38,16 @@ export default function PathfinderStage({ params }: { params: { archetype: strin
 
   const [history, setHistory] = useState<any[]>([]);
 
+  // Initialize funnel data when archetype loads
   useEffect(() => {
-    // Basic verification
-    if (archetype !== 'kova') router.replace('/');
-    if (!stages.includes(stage) && stage !== 'completion') router.replace('/pathfinder/kova/acquisition');
-    
+    if (archetypeData) {
+      setFunnelData(JSON.parse(JSON.stringify(archetypeData.funnelHealth)));
+    }
+  }, [archetypeData]);
+
+  useEffect(() => {
+    if (!stages.includes(stage) && stage !== 'completion') router.replace(`/pathfinder/${archetype}/acquisition`);
+
     if (stage === 'completion') {
       const stored = JSON.parse(sessionStorage.getItem('pathfinder_decisions') || '[]');
       setHistory(stored);
@@ -45,11 +63,11 @@ export default function PathfinderStage({ params }: { params: { archetype: strin
     const consequence = option.consequence;
     const impacts = consequence.funnelImpact;
     
-    const newFunnel = { ...funnelData };
+    const newFunnel = { ...funnelData } as FunnelData;
     const changed: string[] = [];
 
     Object.keys(impacts).forEach((key) => {
-      if (impacts[key] !== '0%') {
+      if (impacts[key] !== '0%' && newFunnel[key as keyof FunnelData]) {
         newFunnel[key as keyof FunnelData].impact = impacts[key];
         changed.push(key);
       }
@@ -118,13 +136,13 @@ export default function PathfinderStage({ params }: { params: { archetype: strin
 
     return (
       <div className="flex h-screen bg-background text-white overflow-hidden">
-        <AARRRSidebar data={funnelData} />
+        {funnelData && <AARRRSidebar data={funnelData} />}
         <div className="flex-1 flex flex-col p-8 md:p-12 overflow-y-auto relative">
           <div className="absolute inset-0 bg-glass-gradient opacity-30 pointer-events-none" />
 
           <div className="relative z-10">
             <h1 className="text-4xl md:text-5xl font-bold mb-2 tracking-tight">Simulation Debrief</h1>
-            <p className="text-lg text-gray-400 mb-10 max-w-2xl">Your decisions across all 5 AARRR stages shaped Kova&apos;s trajectory. Here&apos;s what the data says.</p>
+            <p className="text-lg text-gray-400 mb-10 max-w-2xl">Your decisions across all 5 AARRR stages shaped the business trajectory. Here&apos;s what the data says.</p>
 
             {/* Cumulative Funnel Impact */}
             <div className="glass p-6 rounded-2xl mb-6">
@@ -245,7 +263,7 @@ export default function PathfinderStage({ params }: { params: { archetype: strin
             {/* Final Reflection */}
             <div className="glass p-6 rounded-2xl mb-8">
               <h2 className="text-xl font-bold mb-3 text-accent">Final Reflection</h2>
-              <p className="text-gray-200 leading-relaxed text-base italic">{KOVA_NOVA_PROMPTS.revenue.postConsequence}</p>
+              <p className="text-gray-200 leading-relaxed text-base italic">{novaPrompts?.revenue?.postConsequence || 'Reflect on your decisions across all five stages. Which single intervention had the biggest impact, and what would you do differently?'}</p>
             </div>
 
             <div className="flex justify-end pb-8">
@@ -262,7 +280,7 @@ export default function PathfinderStage({ params }: { params: { archetype: strin
     );
   }
 
-  if (!stageData) return null;
+  if (!stageData || !funnelData || !novaPrompts) return null;
 
   return (
     <div className="flex h-screen bg-background text-white overflow-hidden selection:bg-accent/30 selection:text-white">
@@ -278,14 +296,14 @@ export default function PathfinderStage({ params }: { params: { archetype: strin
         <div className="flex flex-grow overflow-hidden relative z-10 p-6 gap-6">
           <div className="w-[60%] h-full overflow-y-auto pr-2 custom-scrollbar">
              <div className="glass-panel p-6 rounded-2xl min-h-full">
-               <DataDashboard stage={stage} />
+               <DataDashboard stage={stage} archetypeData={archetypeData} />
              </div>
           </div>
           
           <div className="w-[40%] h-full flex flex-col">
             <div className="glass-panel rounded-2xl flex-1 flex flex-col overflow-hidden">
               {!showConsequence && (
-                <DecisionPanel stage={stage} onLockDecision={handleLockDecision} />
+                <DecisionPanel stage={stage} archetypeData={archetypeData} onLockDecision={handleLockDecision} />
               )}
               {showConsequence && (
                 <div className="p-6 h-full overflow-y-auto">
@@ -302,9 +320,9 @@ export default function PathfinderStage({ params }: { params: { archetype: strin
         <NovaChat 
           stage={stage} 
           initialPrompt={
-            showConsequence 
-              ? (KOVA_NOVA_PROMPTS as any)[stage].postConsequence 
-              : (KOVA_NOVA_PROMPTS as any)[stage].entry
+            showConsequence
+              ? novaPrompts[stage]?.postConsequence
+              : novaPrompts[stage]?.entry
           } 
         />
       </div>

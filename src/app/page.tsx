@@ -1,32 +1,37 @@
 'use client';
 
 import { useRouter } from 'next/navigation';
-import { KOVA_ARCHETYPE } from '@/data/pathfinder-kova';
+import { ARCHETYPE_CARDS } from '@/data/archetypes';
 
 export default function Home() {
   const router = useRouter();
 
-  const handleStart = () => {
-    // In a real app we might create a user session here, generate an ID, and save to Firebase
-    router.push('/pathfinder/kova/acquisition');
-  };
-
   return (
-    <div className="min-h-screen flex items-center justify-center bg-background text-white p-6">
-      <div className="max-w-xl w-full bg-surface border border-white/10 rounded-2xl p-8 flex flex-col gap-6">
-        <h1 className="text-4xl font-bold mb-2">Pathfinder</h1>
-        <p className="text-lg text-gray-400">Select an archetype to begin your business simulation.</p>
-        
-        <div 
-          onClick={handleStart}
-          className="p-6 border border-white/10 rounded-xl hover:border-accent hover:bg-accent/5 cursor-pointer transition-all"
-        >
-          <div className="flex justify-between items-start mb-4">
-            <h2 className="text-2xl font-bold">{KOVA_ARCHETYPE.name}</h2>
-            <span className="text-xs px-2 py-1 bg-accent/20 text-accent rounded-full border border-accent/30">{KOVA_ARCHETYPE.type}</span>
-          </div>
-          <p className="text-sm text-gray-300 italic mb-4">"{KOVA_ARCHETYPE.tagline}"</p>
-          <p className="text-sm text-gray-400">{KOVA_ARCHETYPE.description}</p>
+    <div className="min-h-screen bg-background text-white p-6 md:p-12">
+      <div className="max-w-5xl mx-auto">
+        <h1 className="text-4xl md:text-5xl font-bold mb-3 tracking-tight">Pathfinder</h1>
+        <p className="text-lg text-gray-400 mb-10 max-w-2xl">Select a business archetype to begin your AARRR funnel simulation. Each scenario presents a different strategic challenge.</p>
+
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
+          {ARCHETYPE_CARDS.map((card) => (
+            <div
+              key={card.id}
+              onClick={() => router.push(`/pathfinder/${card.id}/acquisition`)}
+              className="p-6 bg-surface border border-white/10 rounded-xl hover:border-white/30 cursor-pointer transition-all group"
+            >
+              <div className="flex justify-between items-start mb-3">
+                <h2 className="text-2xl font-bold group-hover:text-white transition-colors">{card.name}</h2>
+                <span
+                  className="text-xs px-2 py-1 rounded-full border whitespace-nowrap"
+                  style={{ backgroundColor: `${card.color}20`, color: card.color, borderColor: `${card.color}50` }}
+                >
+                  {card.type}
+                </span>
+              </div>
+              <p className="text-sm text-gray-300 italic mb-3">&ldquo;{card.tagline}&rdquo;</p>
+              <p className="text-sm text-gray-400 leading-relaxed">{card.description}</p>
+            </div>
+          ))}
         </div>
       </div>
     </div>

@@ -2,9 +2,8 @@
 
 import React, { useState, useEffect } from 'react';
 import clsx from 'clsx';
-import { KOVA_ARCHETYPE } from '@/data/pathfinder-kova';
 
-const SliderMechanic = ({ options, totalBudget, onUpdate }: { options: any[], totalBudget: number, onUpdate: (valid: boolean, finalIdx: number) => void }) => {
+const SliderMechanic = ({ options, totalBudget, currency = '£', onUpdate }: { options: any[], totalBudget: number, currency?: string, onUpdate: (valid: boolean, finalIdx: number) => void }) => {
   const [allocations, setAllocations] = useState<number[]>(options.map(() => 0));
 
   const totalAllocated = allocations.reduce((a, b) => a + b, 0);
@@ -58,7 +57,7 @@ const SliderMechanic = ({ options, totalBudget, onUpdate }: { options: any[], to
       <div className="mb-4">
         <div className="flex justify-between text-sm mb-1 text-gray-300">
           <span>Remaining Budget:</span>
-          <span>£{remaining.toLocaleString()}</span>
+          <span>{currency}{remaining.toLocaleString()}</span>
         </div>
         <div className="w-full bg-background rounded-full h-2">
           <div className="bg-accent h-2 rounded-full transition-all" style={{ width: `${(totalAllocated / totalBudget) * 100}%` }} />
@@ -76,7 +75,7 @@ const SliderMechanic = ({ options, totalBudget, onUpdate }: { options: any[], to
             onChange={(e) => handleSliderChange(idx, Number(e.target.value))}
             className="w-full accent-accent"
           />
-          <div className="text-xs text-accent text-right">£{allocations[idx].toLocaleString()}</div>
+          <div className="text-xs text-accent text-right">{currency}{allocations[idx].toLocaleString()}</div>
         </div>
       ))}
     </div>
@@ -134,8 +133,8 @@ const TileMechanic = ({ options, onUpdate }: { options: any[], onUpdate: (valid:
   );
 };
 
-export const DecisionPanel = ({ stage, onLockDecision }: { stage: string, onLockDecision: (idx: number) => void }) => {
-  const stageData = KOVA_ARCHETYPE[stage as keyof typeof KOVA_ARCHETYPE] as any;
+export const DecisionPanel = ({ stage, archetypeData, onLockDecision }: { stage: string, archetypeData: any, onLockDecision: (idx: number) => void }) => {
+  const stageData = archetypeData?.[stage] as any;
   const decision = stageData?.decision;
   const [isValid, setIsValid] = useState(false);
   const [finalIdx, setFinalIdx] = useState(-1);
@@ -153,7 +152,7 @@ export const DecisionPanel = ({ stage, onLockDecision }: { stage: string, onLock
       
       <div className="flex-grow">
         {decision.mechanic === 'sliders' && (
-          <SliderMechanic options={decision.options} totalBudget={decision.totalBudget} onUpdate={(v, idx) => { setIsValid(v); setFinalIdx(idx); }} />
+          <SliderMechanic options={decision.options} totalBudget={decision.totalBudget} currency={decision.currency || '£'} onUpdate={(v, idx) => { setIsValid(v); setFinalIdx(idx); }} />
         )}
         {decision.mechanic === 'ranking' && (
           <RankingMechanic options={decision.options} onUpdate={(v, idx) => { setIsValid(v); setFinalIdx(idx); }} />

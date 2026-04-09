@@ -2,7 +2,6 @@
 
 import React from 'react';
 import clsx from 'clsx';
-import { KOVA_ARCHETYPE } from '@/data/pathfinder-kova';
 
 const getSentimentColor = (sentiment: string) => {
   if (sentiment === 'pos') return 'text-accent border-accent/30';
@@ -22,7 +21,7 @@ const KPICards = ({ kpis }: { kpis: any[] }) => (
   </div>
 );
 
-const renderStageData = (stage: string, data: any) => {
+const renderStageData = (stage: string, data: any, currency: string = '£') => {
   switch (stage) {
     case 'acquisition':
       return (
@@ -42,7 +41,7 @@ const renderStageData = (stage: string, data: any) => {
               {data.channels.map((ch: any, idx: number) => (
                 <tr key={idx} className="border-b border-white/5 data-[signal=neg]:text-red-300 data-[signal=pos]:text-accent" data-signal={ch.signal}>
                   <td className="p-2 font-medium text-white">{ch.name}</td>
-                  <td className="p-2">£{ch.spend.toLocaleString()}</td>
+                  <td className="p-2">{currency}{ch.spend.toLocaleString()}</td>
                   <td className="p-2">{ch.sessions.toLocaleString()}</td>
                   <td className="p-2">{ch.cac}</td>
                   <td className="p-2">{ch.roas}</td>
@@ -161,7 +160,7 @@ const renderStageData = (stage: string, data: any) => {
               {data.revenueBreakdown.map((r: any, idx: number) => (
                 <tr key={idx} className="border-b border-white/5 text-gray-200">
                   <td className="p-2 font-medium">{r.source}</td>
-                  <td className="p-2">£{r.revenue.toLocaleString()}</td>
+                  <td className="p-2">{currency}{r.revenue.toLocaleString()}</td>
                   <td className="p-2">{r.pct}</td>
                   <td className="p-2">{r.margin}</td>
                 </tr>
@@ -175,8 +174,8 @@ const renderStageData = (stage: string, data: any) => {
   }
 };
 
-export const DataDashboard = ({ stage }: { stage: string }) => {
-  const stageData = KOVA_ARCHETYPE[stage as keyof typeof KOVA_ARCHETYPE] as any;
+export const DataDashboard = ({ stage, archetypeData }: { stage: string; archetypeData: any }) => {
+  const stageData = archetypeData?.[stage] as any;
 
   if (!stageData) return <div>No data available</div>;
 
@@ -191,7 +190,7 @@ export const DataDashboard = ({ stage }: { stage: string }) => {
       
       <KPICards kpis={stageData.kpis} />
       
-      {renderStageData(stage, stageData)}
+      {renderStageData(stage, stageData, stageData.decision?.currency || archetypeData?.acquisition?.decision?.currency || '£')}
 
       <div className="mt-8 bg-surface border border-white/5 p-4 rounded-xl">
         <h3 className="text-lg font-semibold mb-2 text-white">Data Summary</h3>
